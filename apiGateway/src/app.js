@@ -23,6 +23,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", routes);
 
+// check what is does
 app.use(errorHandler);
 
 module.exports = app;

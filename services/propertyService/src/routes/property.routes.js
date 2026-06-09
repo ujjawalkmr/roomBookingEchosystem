@@ -8,6 +8,7 @@ const router = express.Router();
 
 const rootRoute = "/getProperty";
 router.get(rootRoute, getAllProperties);
+router.get("/getProperty/:id", getAllProperties);
 
 
 

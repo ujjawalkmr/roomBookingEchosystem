@@ -1,80 +1,81 @@
 import bcrypt from "bcryptjs";
-import User from "../models/User.js";
-import Otp from "../models/Otp.js";
-import generateToken from "../utils/generateToken.js";
+import User from "../models/user.model.js";
+import Otp from "../models/otp.model.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/jwt.utils.js";
 
-export const createPassword =
-  async (
+export const createPassword = async (email, password) => {
+  const otpRecord = await Otp.findOne({
     email,
-    password
-  ) => {
+    verified: true,
+  });
 
-    const otpRecord =
-      await Otp.findOne({
-        email,
-        verified: true
-      });
-
-    if (!otpRecord) {
-      throw new Error(
-        "OTP not verified"
-      );
-    }
-
-    const hashedPassword =
-      await bcrypt.hash(
-        password,
-        10
-      );
-
-    const user =
-      await User.create({
-        email,
-        password:
-          hashedPassword
-      });
-
-    await Otp.deleteMany({
-      email
-    });
-
-    return user;
-  };
-
-export const loginUser =
-  async (
+  if (!otpRecord) {
+    throw new Error("OTP not verified");
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await User.create({
     email,
-    password
-  ) => {
+    password: hashedPassword,
+  });
+  await Otp.deleteMany({
+    email,
+  });
 
-    const user =
-      await User.findOne({
-        email
-      });
+  return user;
+};
 
-    if (!user) {
-      throw new Error(
-        "User not found"
-      );
-    }
+export const loginUser = async (email, password) => {
+  const user = await User.findOne({
+    email,
+  });
 
-    const match =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
+  if (!user) {
+    throw new Error("User not found");
+  }
 
-    if (!match) {
-      throw new Error(
-        "Invalid password"
-      );
-    }
+  const match = await bcrypt.compare(password, user.password);
 
-    return {
-      user,
-      token:
-        generateToken(
-          user._id
-        )
-    };
+  if (!match) {
+    throw new Error("Invalid password");
+  }
+
+  const accessToken = generateAccessToken(user._id);
+
+  const refreshToken = generateRefreshToken(user._id);
+  //const presentRefreshToken= User.findOne({refreshToken:refreshToken});
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  return {
+    user,
+    accessToken,
   };
+};
+
+// const {
+//   user,
+//   accessToken,
+//   refreshToken
+// } = await loginUser(
+//   email,
+//   password
+// );
+
+// res.cookie(
+//   "refreshToken",
+//   refreshToken,
+//   {
+//     httpOnly: true,
+//     secure: true,
+//     maxAge: 7 * 24 * 60 * 60 * 1000
+//   }
+// );
+
+// res.status(200).json({
+//   message: "Login successful",
+//   accessToken,
+//   user
+// });

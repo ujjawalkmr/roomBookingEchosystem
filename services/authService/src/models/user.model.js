@@ -4,23 +4,24 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: false,
     },
 
     email: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
 
     password: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
+    refreshToken: String,
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
 export default mongoose.model("User", userSchema);

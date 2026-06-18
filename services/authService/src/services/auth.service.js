@@ -6,7 +6,7 @@ import {
   generateRefreshToken,
 } from "../utils/jwt.utils.js";
 
-export const createPassword = async (email, password) => {
+export const createPassword = async (email, password, name) => {
   const otpRecord = await Otp.findOne({
     email,
     verified: true,
@@ -17,6 +17,7 @@ export const createPassword = async (email, password) => {
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await User.create({
+    name,
     email,
     password: hashedPassword,
   });
@@ -33,18 +34,18 @@ export const loginUser = async (email, password) => {
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("Invalid credentials");
   }
 
   const match = await bcrypt.compare(password, user.password);
 
   if (!match) {
-    throw new Error("Invalid password");
+    throw new Error("Invalid credentials");
   }
 
-  const accessToken = generateAccessToken(user._id);
+  const accessToken = generateAccessToken(user._id, email);
 
-  const refreshToken = generateRefreshToken(user._id);
+  const refreshToken = generateRefreshToken(user._id, email);
   //const presentRefreshToken= User.findOne({refreshToken:refreshToken});
   user.refreshToken = refreshToken;
   await user.save();

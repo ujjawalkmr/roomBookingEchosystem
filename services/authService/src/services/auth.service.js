@@ -34,13 +34,13 @@ export const loginUser = async (email, password) => {
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("Invalid credentials");
   }
 
   const match = await bcrypt.compare(password, user.password);
 
   if (!match) {
-    throw new Error("Invalid password");
+    throw new Error("Invalid credentials");
   }
 
   const accessToken = generateAccessToken(user._id, email);

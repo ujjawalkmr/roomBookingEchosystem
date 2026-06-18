@@ -67,3 +67,11 @@ export const loginController = async (req, res) => {
     res.status(400).json({ status: "FAILURE", message: error.message });
   }
 };
+
+export const logoutController = async (req, res) => {
+  try {
+    const {id, email } = req.user;
+  } catch (error) {
+    res.status(400).json({ status: "FAILURE", message: error.message });
+  }
+}

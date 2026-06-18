@@ -32,3 +32,39 @@ export const validateJson = (req, res, next) => {
 
   next();
 };
+
+
+export const verifyRefreshToken = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const { refreshToken } = req.body;
+
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(decoded.id);
+
+    if (
+      !user ||
+      user.refreshToken !== refreshToken
+    ) {
+      return res.status(401).json({
+        message: "Invalid refresh token"
+      });
+    }
+
+    req.user = user;
+
+    next();
+
+  } catch (error) {
+    return res.status(401).json({
+      message: error.message
+    });
+  }
+};

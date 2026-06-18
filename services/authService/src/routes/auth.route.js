@@ -16,6 +16,6 @@ router.post("/verify-otp", validateJson, verifyOtpController);
 
 router.post("/create-password", validateJson, createPasswordController);
 
-router.post("/login", loginController);
+router.post("/login",validateJson, loginController);
 
 export default router;

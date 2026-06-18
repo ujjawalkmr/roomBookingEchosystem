@@ -41,14 +41,14 @@ export const verifyOtpController = async (req, res) => {
 
 export const createPasswordController = async (req, res) => {
   try {
-    const { email, password, confirmPassword } = req.body;
+    const { email, password, confirmPassword,userName } = req.body;
     if (password !== confirmPassword) {
       return res
         .status(400)
         .json({ status: "FAILURE", message: "Passwords do not match" });
     }
 
-    await createPassword(email, password);
+    await createPassword(email, password,userName);
 
     res.status(201).json({ status: "SUCCESS", message: "Account Created" });
   } catch (error) {

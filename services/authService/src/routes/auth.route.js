@@ -1,11 +1,12 @@
 import express from "express";
-import { validateJson,authMiddleware } from "../middleware/auth.middleware.js";
+import { validateJson, authMiddleware } from "../middleware/auth.middleware.js";
 
 import {
   sendOtpController,
   verifyOtpController,
   createPasswordController,
   loginController,
+  logoutController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -18,7 +19,7 @@ router.post("/create-password", validateJson, createPasswordController);
 
 router.post("/login", validateJson, loginController);
 
-//router.post("/logout",authMiddleware, logoutController);
+router.post("/logout", authMiddleware, logoutController);
 
 export default router;
 //when i call logut then may be it chance to token expire sor call refresh token api ,

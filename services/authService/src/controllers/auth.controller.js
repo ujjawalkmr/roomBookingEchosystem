@@ -2,7 +2,11 @@ import User from "../models/user.model.js";
 
 import { sendOtp, verifyOtp } from "../services/otp.service.js";
 
-import { createPassword, loginUser } from "../services/auth.service.js";
+import {
+  createPassword,
+  loginUser,
+  logoutService,
+} from "../services/auth.service.js";
 
 export const sendOtpController = async (req, res) => {
   try {
@@ -41,14 +45,14 @@ export const verifyOtpController = async (req, res) => {
 
 export const createPasswordController = async (req, res) => {
   try {
-    const { email, password, confirmPassword,userName } = req.body;
+    const { email, password, confirmPassword, userName } = req.body;
     if (password !== confirmPassword) {
       return res
         .status(400)
         .json({ status: "FAILURE", message: "Passwords do not match" });
     }
 
-    await createPassword(email, password,userName);
+    await createPassword(email, password, userName);
 
     res.status(201).json({ status: "SUCCESS", message: "Account Created" });
   } catch (error) {
@@ -65,5 +69,24 @@ export const loginController = async (req, res) => {
     res.status(200).json({ data: result, status: "SUCCESS" });
   } catch (error) {
     res.status(400).json({ status: "FAILURE", message: error.message });
+  }
+};
+
+export const logoutController = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const isLogout = await logoutService(id);
+    if (isLogout) {
+      res.status(200).json({
+        status: "SUCCESS",
+        message: "Logged out successfully",
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      status: "FAILURE",
+      message: error.message,
+    });
   }
 };

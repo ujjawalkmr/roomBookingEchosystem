@@ -56,6 +56,23 @@ export const loginUser = async (email, password) => {
   };
 };
 
+export const logoutService = async (userId) => {
+  const user = await User.findOne({
+    _id: userId,
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  if (!user.refreshToken) {
+    throw new Error("User already logged out"); // already logged out
+  }
+
+  await User.findByIdAndUpdate(userId, {
+    refreshToken: null,
+  });
+  return true;
+};
+
 // const {
 //   user,
 //   accessToken,

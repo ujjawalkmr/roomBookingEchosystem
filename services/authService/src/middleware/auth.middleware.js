@@ -11,12 +11,18 @@ export const authMiddleware = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     req.user = decoded;
 
     next();
   } catch (error) {
-    res.status(401).json({
+    console.error("Authentication error:", error);
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        message: "Token Expired",
+      });
+    }
+
+    return res.status(401).json({
       message: "Invalid Token",
     });
   }
@@ -31,4 +37,28 @@ export const validateJson = (req, res, next) => {
   }
 
   next();
+};
+
+export const verifyRefreshToken = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const user = await User.findById(decoded.id);
+
+    if (!user || user.refreshToken !== refreshToken) {
+      return res.status(401).json({
+        message: "Invalid refresh token",
+      });
+    }
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      message: error.message,
+    });
+  }
 };

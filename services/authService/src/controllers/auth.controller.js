@@ -30,17 +30,26 @@ export const sendOtpController = async (req, res) => {
 };
 
 export const verifyOtpController = async (req, res) => {
-  const { email, otp } = req.body;
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({
+        message: "Invalid OTP",
+      });
+    }
+    const valid = await verifyOtp(email, otp);
 
-  const valid = await verifyOtp(email, otp);
+    if (!valid) {
+      return res.status(400).json({
+        message: "Invalid OTP",
+      });
+    }
 
-  if (!valid) {
-    return res.status(400).json({
-      message: "Invalid OTP",
-    });
+    res.json({ status: "SUCCESS", message: "OTP Verified" });
+  } catch (error) { 
+        res.status(400).json({ status: "FAILURE", message: error.message });
+
   }
-
-  res.json({ status: "SUCCESS", message: "OTP Verified" });
 };
 
 export const createPasswordController = async (req, res) => {

@@ -1,0 +1,267 @@
+Your approach is actually the correct one. Don't try to put everything into a single table/model. Instead, separate entities based on what they represent.
+
+1. Hotel and Branch (Recommended)
+
+Suppose your hotel chain is Taj Hotels.
+
+It has branches like:
+
+Taj Mumbai
+Taj Delhi
+Taj Goa
+Taj Jaipur
+
+Then your models should look like this:
+
+Hotel
+
+This stores information common to the entire hotel chain.
+
+Hotel
+------
+id
+name
+description
+logo
+website
+email
+phone
+createdAt
+updatedAt
+
+Example
+
+id	name
+1	Taj Hotels
+HotelBranch
+
+Each branch belongs to one hotel.
+
+HotelBranch
+------------
+id
+hotelId (FK -> Hotel.id)
+branchName
+address
+city
+state
+country
+latitude
+longitude
+phone
+email
+ratingAverage
+totalReviews
+createdAt
+updatedAt
+
+Example
+
+id	hotelId	branchName
+1	1	Taj Mumbai
+2	1	Taj Delhi
+3	1	Taj Goa
+
+Relationship
+
+Hotel
+  |
+  | 1
+  |
+  |------< HotelBranch (Many)
+
+This is perfect database normalization.
+
+2. Booking
+
+Booking should belong to a branch, not the hotel.
+
+Because people book a specific location.
+
+Booking
+--------
+id
+userId
+branchId
+checkIn
+checkOut
+roomType
+numberOfGuests
+status
+totalAmount
+createdAt
+
+Relationship
+
+Hotel
+   |
+   |
+HotelBranch
+      |
+      |
+   Booking
+3. Reviews
+
+Yes.
+
+Reviews should be a separate model.
+
+Never store reviews inside Hotel or Branch.
+
+Create
+
+Review
+-------
+id
+userId
+branchId
+bookingId (optional but recommended)
+rating
+title
+comment
+createdAt
+updatedAt
+
+Relationship
+
+User
+  |
+  |
+Review
+  |
+  |
+HotelBranch
+Why review belongs to Branch?
+
+Imagine
+
+Taj Mumbai
+⭐⭐⭐⭐⭐
+
+Taj Delhi
+⭐⭐⭐
+
+Taj Goa
+⭐⭐⭐⭐
+
+If reviews are attached to the Hotel instead of the Branch, all branches would show the same rating, which is incorrect.
+
+So reviews should be linked to the branch.
+
+4. Room
+
+Rooms also belong to a branch.
+
+Room
+-----
+id
+branchId
+roomNumber
+roomType
+price
+capacity
+isAvailable
+
+Relationship
+
+Hotel
+   |
+HotelBranch
+      |
+      |
+    Room
+5. Images
+
+Instead of adding many image columns, create a separate table.
+
+HotelImage
+-----------
+id
+branchId
+imageUrl
+imageType
+
+Example
+
+Lobby
+Room
+Swimming Pool
+Restaurant
+Reception
+6. Amenities
+
+Again, separate model.
+
+Amenity
+---------
+id
+name
+icon
+
+Examples
+
+WiFi
+Parking
+Pool
+Spa
+Gym
+Restaurant
+
+Since many branches can share the same amenities, use a junction table:
+
+BranchAmenity
+--------------
+id
+branchId
+amenityId
+
+This is a many-to-many relationship.
+
+Overall Database Design
+Hotel
+------
+id
+name
+logo
+
+        1
+        |
+        |
+        | Many
+HotelBranch
+------------
+id
+hotelId
+name
+city
+address
+
+      |
+      | 1
+      |
+      | Many
++-------------+
+|             |
+Room       Review
+ |            |
+ |            |
+Booking      User
+
+HotelBranch
+     |
+     |
+HotelImage
+
+HotelBranch
+     |
+BranchAmenity
+     |
+Amenity
+One suggestion
+
+Instead of naming the second model HotelModel, consider naming it something like HotelBranch or Branch. That makes the intent much clearer:
+
+Hotel → Information about the hotel chain/brand.
+HotelBranch → Information about each physical location.
+
+This design is scalable and is commonly used in booking systems. If later you need features like room availability, payments, offers, wishlists, or staff management, this structure will support them without major changes.

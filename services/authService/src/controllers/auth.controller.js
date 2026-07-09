@@ -23,9 +23,9 @@ export const sendOtpController = async (req, res) => {
 
     await sendOtp(email);
 
-    res.json({ status: "SUCCESS", message: "OTP sent successfully" });
+   return res.json({ status: "SUCCESS", message: "OTP sent successfully" });
   } catch (error) {
-    res.status(500).json({ status: "FAILURE", message: error.message });
+   return res.status(500).json({ status: "FAILURE", message: error.message });
   }
 };
 
@@ -45,9 +45,9 @@ export const verifyOtpController = async (req, res) => {
       });
     }
 
-    res.json({ status: "SUCCESS", message: "OTP Verified" });
+   return res.json({ status: "SUCCESS", message: "OTP Verified" });
   } catch (error) { 
-        res.status(400).json({ status: "FAILURE", message: error.message });
+      return  res.status(400).json({ status: "FAILURE", message: error.message });
 
   }
 };
@@ -63,9 +63,9 @@ export const createPasswordController = async (req, res) => {
 
     await createPassword(email, password, userName);
 
-    res.status(201).json({ status: "SUCCESS", message: "Account Created" });
+  return  res.status(201).json({ status: "SUCCESS", message: "Account Created" });
   } catch (error) {
-    res.status(400).json({ status: "FAILURE", message: error.message });
+   return res.status(400).json({ status: "FAILURE", message: error.message });
   }
 };
 
@@ -75,9 +75,9 @@ export const loginController = async (req, res) => {
 
     const result = await loginUser(email, password);
 
-    res.status(200).json({ data: result, status: "SUCCESS" });
+   return res.status(200).json({ data: result, status: "SUCCESS" });
   } catch (error) {
-    res.status(400).json({ status: "FAILURE", message: error.message });
+   return res.status(400).json({ status: "FAILURE", message: error.message });
   }
 };
 
@@ -87,13 +87,13 @@ export const logoutController = async (req, res) => {
 
     const isLogout = await logoutService(id);
     if (isLogout) {
-      res.status(200).json({
+    return  res.status(200).json({
         status: "SUCCESS",
         message: "Logged out successfully",
       });
     }
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       status: "FAILURE",
       message: error.message,
     });

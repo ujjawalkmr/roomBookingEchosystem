@@ -1,0 +1,17 @@
+# Hotels data is coming
+# installation :-
+
+ --> npm init -y  
+ --> npm install express mongoose dotenv cors
+ --> npm install --save-dev nodemon
+ --> npm install helmet  
+ --> npm install morgan
+ --> npm install cors
+
+ # add in package.json package
+   "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "type":module

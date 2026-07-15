@@ -1,0 +1,217 @@
+# Room Image Service
+
+## Overview
+
+The Room Image Service is responsible for uploading, retrieving, and deleting room images in the Hotel Booking System.
+
+Images are uploaded to **Cloudinary**, while image metadata is stored in **MongoDB**.
+
+---
+
+## Tech Stack
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- Multer
+- Cloudinary
+- multer-storage-cloudinary
+
+---
+
+## Features
+
+- Upload one or multiple room images
+- Store images securely in Cloudinary
+- Save image information in MongoDB
+- Retrieve all images for a room
+- Delete room images
+
+---
+
+## Folder Structure
+
+```
+src/
+│
+├── config/
+│   ├── cloudinary.js
+│   └── roomImage.db.config.js
+│
+├── controllers/
+│   └── roomImage.controller.js
+│
+├── middleware/
+│   └── upload.middleware.js
+│
+├── models/
+│   └── roomImage.model.js
+│
+├── routes/
+│   └── roomImage.routes.js
+│
+├── services/
+│   └── roomImage.service.js
+│
+├── app.js
+└── server.js
+```
+
+---
+
+## Installation
+
+Clone the repository.
+
+```bash
+git clone <repository-url>
+```
+
+Install dependencies.
+
+```bash
+npm install
+```
+
+Start the server.
+
+```bash
+npm run dev
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file.
+
+```env
+PORT=-----
+
+MONGO_URI=your_mongodb_connection_string
+
+CLOUD_NAME=your_cloud_name
+CLOUD_API_KEY=your_cloudinary_api_key
+CLOUD_API_SECRET=your_cloudinary_api_secret
+```
+
+---
+
+## API Endpoints
+
+### Upload Room Images
+
+**POST**
+
+```
+/api/room-images/upload
+```
+
+Request Type
+
+```
+multipart/form-data
+```
+
+Form Data
+
+| Key | Type |
+|------|------|
+| roomId | Text |
+| images | File |
+
+---
+
+### Get Room Images
+
+**GET**
+
+```
+/api/room-images/:roomId
+```
+
+Returns all images for the specified room.
+
+---
+
+### Delete Room Image
+
+**DELETE**
+
+```
+/api/room-images/:id
+```
+
+Deletes the image from Cloudinary and removes its metadata from MongoDB.
+
+---
+
+## Data Flow
+
+```
+React Frontend
+      │
+      ▼
+POST /api/room-images/upload
+      │
+      ▼
+Multer Middleware
+      │
+      ▼
+Cloudinary
+      │
+      ▼
+Returns imageUrl & publicId
+      │
+      ▼
+Room Image Controller
+      │
+      ▼
+Room Image Service
+      │
+      ▼
+MongoDB
+      │
+      ▼
+Response
+```
+
+---
+
+## Sample MongoDB Document
+
+```json
+{
+    "_id": "689xxxx",
+    "roomId": "688xxxx",
+    "images": [
+        {
+            "imageUrl": "https://res.cloudinary.com/demo/image/upload/v123/room1.jpg",
+            "publicId": "hotel-booking/rooms/room1",
+            "isPrimary": true
+        },
+        {
+            "imageUrl": "https://res.cloudinary.com/demo/image/upload/v123/room2.jpg",
+            "publicId": "hotel-booking/rooms/room2",
+            "isPrimary": false
+        }
+    ],
+    "createdAt": "2026-07-16T10:00:00Z",
+    "updatedAt": "2026-07-16T10:00:00Z"
+}
+```
+
+---
+
+## Dependencies
+
+```bash
+npm install express mongoose multer cloudinary multer-storage-cloudinary dotenv
+```
+
+---
+
+## Author
+
+Developed as part of the Hotel Booking System using the MERN stack.

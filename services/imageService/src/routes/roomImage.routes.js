@@ -1,7 +1,7 @@
 import express from "express";
 import upload from "../middleware/upload.middleware.js";
 import {
-    getRoomImagesController,uploadRoomImageController
+    getRoomImagesController,uploadRoomImageController, updateRoomImagesController
 } from "../controllers/roomImage.controllers.js";
 
 const router = express.Router();
@@ -10,8 +10,13 @@ router.get("/getAllRoomImages", getRoomImagesController);
 
 router.post(
     "/upload",
-    upload.array("images", 10), // maximum 10 images
+    upload, // maximum 10 images
     uploadRoomImageController
+);
+router.put(
+  "/uploadImages/byRoomId/:roomId",
+  upload,
+  updateRoomImagesController
 );
 
 // router.get("/:roomId", getRoomImages);

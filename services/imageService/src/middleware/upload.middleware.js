@@ -1,15 +1,28 @@
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "../config/cloudinary.config.js";
+import { multerUpload } from "../utils/utils.js";
 
-const storage = new CloudinaryStorage({
-    cloudinary,
-    params: {
-        folder: "room-booking-echo/room-images",
-        allowed_formats: ["jpg", "jpeg", "png", "webp","svg"],
-    },
-});
+const upload = (req, res, next) => {
+  multerUpload.array("images", 10)(req, res, (err) => {
+    if (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_COUNT") {
+          return res.status(400).json({
+            success: false,
+            message: "You can upload a maximum of 10 images.",
+          });
+        }
+      }
 
-const upload = multer({ storage });
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+
+    next();
+  });
+};
 
 export default upload;
+
+

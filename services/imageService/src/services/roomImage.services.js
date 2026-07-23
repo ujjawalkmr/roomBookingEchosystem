@@ -8,6 +8,23 @@ export const uploadRoomImages = async (roomImageData) => {
     return await RoomImage.create(roomImageData);
 };
 
+export const updateRoomImages = async (roomId, newImages) => {
+  return await RoomImage.findOneAndUpdate(
+    { roomId },
+    {
+      $push: {
+        images: {
+          $each: newImages,
+        },
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+};
+
 // export const getRoomImagesByRoomId = async (roomId) => {
 //     return await RoomImage.find({ roomId });
 // };

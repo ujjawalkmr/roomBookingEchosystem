@@ -12,6 +12,7 @@ const roomSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
 
     roomType: {
@@ -38,6 +39,16 @@ const roomSchema = new mongoose.Schema(
     },
 
     description: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    subTitle: {
       type: String,
       default: "",
       trim: true,
